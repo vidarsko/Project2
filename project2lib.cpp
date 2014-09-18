@@ -14,20 +14,52 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	*/
 
 	//Allocation of memory
-	vec ijm;
-	double m,tau;
-	int i,j; 
+	mat B = A;
+	vec klm,tcand=zeros(2);
+	double m,tau,t,c,s,s2,c2,sc;
+	int k,l; 
 
-	//Initial error estimate, larger than tol 
-	double eps = 1;
+	//Initial error
+	klm = odmmi(A,N);
+	m = klm(2);
 
 	//While loop until tolerance criteria is met.
-	while (eps>tol){
+	while (m>tol){
 		//Finding the largest of diagonal element and its value.
-		ijm = odmmi(A,N);
-		i = ijm(0),j = ijm(1), m= ijm(2);
+		k = klm(0),l = klm(1);
 
+		//Jacobi rotate values
+		tau = (A(l,l) - A(k,k))/(2*A(k,l));
+		if (tau<10){
+			tcand(0) = -tau + sqrt(1+tau*tau);
+		}
+		else{
+			tcand(0) = 1/(tau+sqrt(tau*tau));
+		}
+		tcand(1) = -tau - sqrt(1+tau*tau);
+		t = tcand.min();
+		c = 1/sqrt(1+t*t);
+		s = t*c;
 
+		//Rotation product B
+		for (int i = 0;i<N;i++){
+			if (i!=k && i!=l){
+				B(i,k) = A(i,k) - A(i,l)*s;
+				B(i,l) = A(i,l) - A(i,k)*s;
+			}
+		}
+		s2 = s*s; c2 = c*c; sc = s*c;
+		B(k,k) = A(k,k)*c2 - 2*A(k,l)*sc + A(l,l)*s2;
+		B(l,l) = A(l,l)*c2 + 2*A(k,l)*sc + A(k,k)*s2;
+		B(k,l) = (A(k,k)-A(l,l))*sc + A(k,l)*(c2-s2);
+
+		//Update A and error estimate
+		A = B;
+		klm = odmmi(A,N);
+		m = klm(2);
+	}
+	for (int i = 0; i<N; i++){
+		eigval(i) = A(i,i);
 	}
 }
 
@@ -40,20 +72,20 @@ vec odmmi(mat A,int N){
 	- mat A - The matrix in question
 	- int N - The dimension of the square matrix
 	Output:
-	- vec ijm - A 3-vector (i,j,m) consisting of the indices of the maximum element 
-	m and m itself.
+	- vec klm - A 3-vector (k,l,m) consisting of the indices of the maximum squared
+	element m and m itself.
 	*/
-	vec ijm = zeros(3);
+	vec klm = zeros(3);
 	double m = 0;
 	for (int i = 0; i<N; i++){
 		for (int j = 0; j<N; j++){
 			if (A(i,j)*A(i,j)>m && i != j){
 				m = A(i,j)*A(i,j);
-				ijm(0) = i;
-				ijm(1) = j;
-				ijm(2) = m;
+				klm(0) = i;
+				klm(1) = j;
+				klm(2) = m;
 			}
 		}
 	}
-	return ijm;
+	return klm;
 }

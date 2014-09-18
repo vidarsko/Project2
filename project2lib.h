@@ -2,6 +2,7 @@
 #define project2lib_h
 #include <iostream>
 #include <armadillo>
+#include <cmath>
 using namespace std;
 using namespace arma;
 
