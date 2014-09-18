@@ -7,19 +7,20 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	stored in eigval and eigvec respectively.
 	Input:
 	- vec& eigval - n-vector for storing eigenvalues
-	- mat& eigvec - (nxn).matrix for storing eigenvectors as colums
+	- mat& eigvec - (nxn).matrix for storing eigenvectors as colums.
 	- mat A - the (nxn)-matrix we're interested in. 
 	- int N - the dimension of the square A matrix.
 	- tol [optional] - the tolerance for the off-diagonal elements. (default=1e-10)
 	*/
 
 	//Allocation of memory
-	mat B = A;
+	mat B = A,R(N,N);
 	vec klm;
-	double m,tau,t,c,s,s2,c2,sc;
+	double m,tau,t,c,s,s2,c2,sc,r_il,r_ik;
 	int k,l; 
 
-	//Initial error
+	//Initial error and R matrix
+	R.eye();
 	klm = odmmi(A,N);
 	m = klm(2);
 
@@ -40,6 +41,12 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 		s = t*c;
 
 		//Rotation product B
+		s2 = s*s; c2 = c*c; sc = s*c;
+		B(k,k) = A(k,k)*c2 - 2*A(k,l)*sc + A(l,l)*s2;
+		B(l,l) = A(l,l)*c2 + 2*A(k,l)*sc + A(k,k)*s2;
+		B(k,l) = 0;
+		B(l,k) = 0;
+
 		for (int i = 0;i<N;i++){
 			if (i!=k && i!=l){
 				B(i,k) = A(i,k)*c - A(i,l)*s;
@@ -47,24 +54,24 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 				B(i,l) = A(i,l)*c + A(i,k)*s;
 				B(l,i) = B(i,l);
 			}
+			//Update eigenvectors
+			r_ik = R(i,k);
+			r_il = R(i,l);
+			R(i,k) = c*r_ik - s*r_il;
+			R(i,l) = c*r_il + s*r_ik;
 		}
-		s2 = s*s; c2 = c*c; sc = s*c;
-		B(k,k) = A(k,k)*c2 - 2*A(k,l)*sc + A(l,l)*s2;
-		B(l,l) = A(l,l)*c2 + 2*A(k,l)*sc + A(k,k)*s2;
-		B(k,l) = 0;
-		B(l,k) = 0;
 
 		//Update A and error estimate
 		A = B;
 		klm = odmmi(A,N);
 		m = klm(2);
 	}
+
+	//Fill inn eigenvalues and eigenvectors
 	for (int i = 0; i<N; i++){
 		eigval(i) = A(i,i);
 	}
-	cout << "Final matrix:" << endl;
-	cout << A;
-	
+	eigvec = R;
 }
 
 vec odmmi(mat A,int N){
@@ -92,4 +99,66 @@ vec odmmi(mat A,int N){
 		}
 	}
 	return klm;
+}
+
+
+//******************SphericalQuantum class functions***********************//
+//Constructor
+SphericalQuantum::SphericalQuantum(int a, double b, double c){
+	/*
+	Constructor for the Spherical quantum class. 
+	Takes arguments
+	int a - n_step, the number of steps. (i.e. the resolution)
+	double b - rho_max, the largest value of rho. 
+	double c - rho_min [default=0], the smallest value of rho. 
+	*/
+	n_step = a; rho_max=b; rho_min=c;
+	h = (rho_max-rho_min)/n_step;
+	pos = linspace(rho_min,rho_max,n_step+1);
+}
+
+//Configuration functions
+void SphericalQuantum::set_potential(vec potential){
+	/*
+	Function that adds the potential to the system. 
+	*/
+	V = potential;
+}
+
+//Solve functions 
+void SphericalQuantum::Solve(void){
+	//Declare hamiltonian matrix
+	mat H = zeros(n_step-1,n_step-1);
+	
+	//Set matrix values
+	for (int i = 0;i<n_step-1;i++){
+		H(i,i) = 2/(h*h) + V(i+1); //V goes from 0 to n_step, we want the middle.
+		if (i==0);// Work in progress
+	}
+}
+
+//Data extraction functions
+vec SphericalQuantum::get_pos(void){
+	/*
+	Function that returns the position vector of the system.
+	*/
+	return pos;
+}
+
+vec SphericalQuantum::get_V(void){
+	/*
+	Fucntion that returns the potential of the system.
+	*/
+	return V;
+}
+
+//Test functions
+void SphericalQuantum::testprint(void){
+	/* 
+	Prints out values of different variables.
+	*/
+	cout << "rho_min = " << rho_min << endl;
+	cout << "rho_max = " << rho_max << endl;
+	cout << "n_step = " << n_step << endl;
+	cout << "h =" << h << endl;
 }
