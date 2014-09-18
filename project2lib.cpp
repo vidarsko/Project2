@@ -15,7 +15,7 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 
 	//Allocation of memory
 	mat B = A;
-	vec klm,tcand=zeros(2);
+	vec klm;
 	double m,tau,t,c,s,s2,c2,sc;
 	int k,l; 
 
@@ -25,33 +25,34 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 
 	//While loop until tolerance criteria is met.
 	while (m>tol){
-		//Finding the largest of diagonal element and its value.
+		//Finding the largest off-diagonal element and its value.
 		k = klm(0),l = klm(1);
 
 		//Jacobi rotate values
 		tau = (A(l,l) - A(k,k))/(2*A(k,l));
-		if (tau<10){
-			tcand(0) = -tau + sqrt(1+tau*tau);
+		if (tau>=0){
+			t = 1/(tau + sqrt(1 + tau*tau));
 		}
-		else{
-			tcand(0) = 1/(tau+sqrt(tau*tau));
+		else {
+			t = -1/(-tau+sqrt(1+tau*tau));
 		}
-		tcand(1) = -tau - sqrt(1+tau*tau);
-		t = tcand.min();
 		c = 1/sqrt(1+t*t);
 		s = t*c;
 
 		//Rotation product B
 		for (int i = 0;i<N;i++){
 			if (i!=k && i!=l){
-				B(i,k) = A(i,k) - A(i,l)*s;
-				B(i,l) = A(i,l) - A(i,k)*s;
+				B(i,k) = A(i,k)*c - A(i,l)*s;
+				B(k,i) = B(i,k);
+				B(i,l) = A(i,l)*c + A(i,k)*s;
+				B(l,i) = B(i,l);
 			}
 		}
 		s2 = s*s; c2 = c*c; sc = s*c;
 		B(k,k) = A(k,k)*c2 - 2*A(k,l)*sc + A(l,l)*s2;
 		B(l,l) = A(l,l)*c2 + 2*A(k,l)*sc + A(k,k)*s2;
-		B(k,l) = (A(k,k)-A(l,l))*sc + A(k,l)*(c2-s2);
+		B(k,l) = 0;
+		B(l,k) = 0;
 
 		//Update A and error estimate
 		A = B;
@@ -61,6 +62,9 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	for (int i = 0; i<N; i++){
 		eigval(i) = A(i,i);
 	}
+	cout << "Final matrix:" << endl;
+	cout << A;
+	
 }
 
 vec odmmi(mat A,int N){
