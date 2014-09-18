@@ -1,6 +1,6 @@
 #include "project2lib.h"
 
-void eig_jacobi(vec& eigval,mat& eigvec,mat A,double tol){
+void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	/* 
 	Function that takes a (nxn) matrix A and returns its eigenvalues
 	and corresponding eigenvectors as column vectors 
@@ -9,12 +9,21 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,double tol){
 	- vec& eigval - n-vector for storing eigenvalues
 	- mat& eigvec - (nxn).matrix for storing eigenvectors as colums
 	- mat A - the (nxn)-matrix we're interested in. 
+	- int N - the dimension of the square A matrix.
 	- tol [optional] - the tolerance for the off-diagonal elements. (default=1e-10)
 	*/
-	cout << "kaping!" << endl;
-	cout << eigval << endl;
-	eigval(0) = 22;
-	cout << eigval << endl;
+
+	//Allocation of memory
+	vec ijm;
+
+	//Initial error estimate, larger than tol 
+	double eps = 1;
+
+	//While loop until tolerance criteria is met.
+	while (eps>tol){
+		//Finding the largest of diagonal element and its value.
+		ijm = odmmi(A,N);
+	}
 }
 
 vec odmmi(mat A,int N){
@@ -33,8 +42,8 @@ vec odmmi(mat A,int N){
 	double m = 0;
 	for (int i = 0; i<N; i++){
 		for (int j = 0; j<N; j++){
-			if (A(i,j)>m && i != j){
-				m = A(i,j);
+			if (abs(A(i,j))>m && i != j){
+				m = abs(A(i,j));
 				ijm(0) = i;
 				ijm(1) = j;
 				ijm(2) = m;
