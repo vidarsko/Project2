@@ -5,9 +5,9 @@ using namespace std;
 using namespace arma;
 
 int main(){
-	int N = 2;
-	mat A (N,N);
-	vec eigval = zeros(N);
-	mat eigvec = zeros(N,N);
-	eig_jacobi(eigval,eigvec,A);
+	int N = 5;
+	mat A = randu<mat>(N,N);
+	cout << A << endl;
+	vec ijm = odmmi(A,N);
+	cout << "Off diagonal maximum matrix indices: " << endl << ijm << endl;
 }
