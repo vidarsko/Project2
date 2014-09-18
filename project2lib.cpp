@@ -15,6 +15,8 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 
 	//Allocation of memory
 	vec ijm;
+	double m,tau;
+	int i,j; 
 
 	//Initial error estimate, larger than tol 
 	double eps = 1;
@@ -23,6 +25,9 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	while (eps>tol){
 		//Finding the largest of diagonal element and its value.
 		ijm = odmmi(A,N);
+		i = ijm(0),j = ijm(1), m= ijm(2);
+
+
 	}
 }
 
@@ -42,8 +47,8 @@ vec odmmi(mat A,int N){
 	double m = 0;
 	for (int i = 0; i<N; i++){
 		for (int j = 0; j<N; j++){
-			if (abs(A(i,j))>m && i != j){
-				m = abs(A(i,j));
+			if (A(i,j)*A(i,j)>m && i != j){
+				m = A(i,j)*A(i,j);
 				ijm(0) = i;
 				ijm(1) = j;
 				ijm(2) = m;
