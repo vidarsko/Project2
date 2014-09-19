@@ -26,7 +26,10 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 
 	//While loop until tolerance criteria is met.
 	while (m>tol){
-		//Finding the largest off-diagonal element and its value.
+		//Print error to estimate time developement
+		cout << m << endl;
+
+		//Finding the largest off-diagonal element indices
 		k = klm(0),l = klm(1);
 
 		//Jacobi rotate values
@@ -72,6 +75,15 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 		eigval(i) = A(i,i);
 	}
 	eigvec = R;
+
+	//Sort
+	uvec sort_indices = sort_index(eigval);
+	mat eigvec_copy(N,N); 	eigvec_copy = eigvec; 
+	vec eigval_copy(N);  	eigval_copy = eigval;
+	for (int i = 0;i<N;i++){
+		eigvec.col(i) = eigvec_copy.col(sort_indices(i));
+		eigval(i) = eigval_copy(sort_indices(i));
+	}
 }
 
 vec odmmi(mat A,int N){
@@ -114,7 +126,7 @@ SphericalQuantum::SphericalQuantum(int a, double b, double c){
 	*/
 	n_step = a; rho_max=b; rho_min=c;
 	h = (rho_max-rho_min)/n_step;
-	pos = linspace(rho_min,rho_max,n_step+1);
+	rho = linspace(rho_min,rho_max,n_step+1); //position array
 }
 
 //Configuration functions
@@ -126,23 +138,31 @@ void SphericalQuantum::set_potential(vec potential){
 }
 
 //Solve functions 
-void SphericalQuantum::Solve(void){
-	//Declare hamiltonian matrix
-	mat H = zeros(n_step-1,n_step-1);
-	
-	//Set matrix values
-	for (int i = 0;i<n_step-1;i++){
-		H(i,i) = 2/(h*h) + V(i+1); //V goes from 0 to n_step, we want the middle.
-		if (i==0);// Work in progress
+void SphericalQuantum::solve(void){
+	//Dimensions on hamiltonian and energystates
+	H = zeros(n_step,n_step);
+	Energies = zeros(n_step);
+	Energy_states = zeros(n_step,n_step);
+
+	double ode = -1/(h*h); //off-diagonal element
+	double h2 = h*h;
+	//Set Hamiltonian matrix elements
+	for (int i = 0;i<n_step;i++){
+		H(i,i) = 2/h2 + V(i+1); //V goes from 0 to n_step, we want the middle part.
+		if 		(i==0)			{H(i,i+1) = ode;}
+		else if (i==n_step-1)	{				 H(i,i-1) = ode;}
+		else 					{H(i,i+1) = ode; H(i,i-1) = ode;}
 	}
+	//Find the eigenvalues and states
+	eig_jacobi(Energies,Energy_states,H,n_step);
 }
 
 //Data extraction functions
-vec SphericalQuantum::get_pos(void){
+vec SphericalQuantum::get_rho(void){
 	/*
 	Function that returns the position vector of the system.
 	*/
-	return pos;
+	return rho;
 }
 
 vec SphericalQuantum::get_V(void){
@@ -152,7 +172,11 @@ vec SphericalQuantum::get_V(void){
 	return V;
 }
 
-//Test functions
+mat SphericalQuantum::get_H(void){
+	return H;
+}
+
+//Test and print functions
 void SphericalQuantum::testprint(void){
 	/* 
 	Prints out values of different variables.
@@ -161,4 +185,57 @@ void SphericalQuantum::testprint(void){
 	cout << "rho_max = " << rho_max << endl;
 	cout << "n_step = " << n_step << endl;
 	cout << "h =" << h << endl;
+}
+
+void SphericalQuantum::print2file(void){
+	/*
+	Prints the solved system to a datafile in the following format:
+	Filename: "SphericalQuantum-[Date and time].out"
+	Content:
+	"""
+	rho 	,V 		,psi_0 	, ... 	,psi_{n_{step}}	,E
+	0,		,0.33	,0.00	, ... 	,0.00			,E_0
+	h,		,0.423	,0.21	, ... 	,0.11 			,E_1
+	...
+	rho_max,0.22	,0.00	, ... 	,0.00			,E_{n_step}
+	"""
+	*/
+	//Syntax to get time stamp
+	time_t timer = time(NULL);
+	struct tm * timeinfo  = localtime(&timer);
+	char TID[80];
+	strftime(TID,80,"%c",timeinfo);
+	
+	//Open file syntax
+	ofstream myfile;
+	string tmp = "SphericalQuantum-"; tmp.append(string(TID)); 
+	tmp.append(".out"); const char* name = tmp.c_str(); 
+	myfile.open(name);
+
+	//Print data to file
+	//Top row
+	myfile << "rho, V, ";
+	for (int i=0;i<n_step;i++){myfile<<"psi_"<<i<<", ";}
+	myfile << "E\n";
+	
+
+	//Content
+	//Zero position
+	myfile << rho(0) << ", " << V(0) << ", ";
+	for (int i=0;i<n_step;i++){myfile << "0, ";}
+	myfile << Energies(0)<<",\n";
+	for (int i = 1; i<n_step; i++){ //the middle part
+		myfile << rho(i) << ", " << V(i) << ", "; //We want the middle part 
+		for (int j=0;j<n_step;j++){myfile << Energy_states(i,j) << ", ";}
+		myfile << Energies(i)<< ",\n";
+	}
+
+	//Close file
+	myfile.close();
+}
+
+
+//*******************Potential functions ******************//
+vec plain_harmonic(vec x){
+	return x%x;
 }

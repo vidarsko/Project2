@@ -3,6 +3,9 @@
 #include <iostream>
 #include <armadillo>
 #include <cmath>
+#include <ctime>
+#include <fstream>
+#include <string>
 using namespace std;
 using namespace arma;
 
@@ -21,8 +24,8 @@ class SphericalQuantum{
 	private:
 		int n_step; 
 		double rho_min,rho_max, h; 
-		vec pos,V,Energies;
-		mat Energy_states; 
+		vec rho,V,Energies;
+		mat Energy_states,H; 
 	public:
 		//Constructor
 		SphericalQuantum (int a, double b, double c=0);
@@ -31,15 +34,20 @@ class SphericalQuantum{
 		//Configure functions
 		void set_potential(vec potential);
 
-		//Solvefunctions
+		//Solvefunction
 		void solve(void);
 
 		//Data extraction functions
-		vec get_pos(void);
+		vec get_rho(void);
 		vec get_V(void);
+		mat get_H(void);
 
-		//Test functions
+		//Test and print functions
 		void testprint(void);
+		void print2file(void);
 };	
+
+//Different potential functions 
+vec plain_harmonic(vec x);
 
 #endif
