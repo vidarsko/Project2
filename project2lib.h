@@ -35,7 +35,7 @@ class SphericalQuantum{
 		void set_potential(vec potential);
 
 		//Solvefunction
-		void solve(void);
+		void solve(string method="jacobi");
 
 		//Data extraction functions
 		vec get_rho(void);
@@ -48,6 +48,6 @@ class SphericalQuantum{
 };	
 
 //Different potential functions 
-vec plain_harmonic(vec x);
-
+vec plain_harmonic(vec x,int l = 0);
+vec two_elec(vec x,double omega_r=1);
 #endif

@@ -26,6 +26,7 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 
 	//While loop until tolerance criteria is met.
 	while (m>tol){
+		cout << m << endl;
 		//Print error to estimate time developement
 		cout << m << endl;
 
@@ -138,7 +139,14 @@ void SphericalQuantum::set_potential(vec potential){
 }
 
 //Solve functions 
-void SphericalQuantum::solve(void){
+void SphericalQuantum::solve(string method){
+	/*
+	Solves the system using specified method.
+	Input:
+	- string method:
+		"jacobi" (default)	-uses the jacobi rotation method.
+		"armadillo"			-uses the method provided by the armadillo library. 
+	*/
 	//Dimensions on hamiltonian and energystates
 	H = zeros(n_step,n_step);
 	Energies = zeros(n_step);
@@ -154,7 +162,12 @@ void SphericalQuantum::solve(void){
 		else 					{H(i,i+1) = ode; H(i,i-1) = ode;}
 	}
 	//Find the eigenvalues and states
-	eig_jacobi(Energies,Energy_states,H,n_step);
+	if (method == "jacobi"){
+		eig_jacobi(Energies,Energy_states,H,n_step);
+	}
+	else if (method == "armadillo"){
+		eig_sym(Energies,Energy_states,H);
+	}
 }
 
 //Data extraction functions
@@ -236,6 +249,23 @@ void SphericalQuantum::print2file(void){
 
 
 //*******************Potential functions ******************//
-vec plain_harmonic(vec x){
-	return x%x;
+vec plain_harmonic(vec x, int l){
+	/*
+	The plain harmonic potential. 
+	Input:
+	- vec x: 			position coordinates
+	- int l(default=0): angular momentum quantum number
+	*/
+	return x%x + l*(l+1)/(x%x);
+}
+
+vec two_elec(vec x,double omega_r){
+	/*
+	The potential used in the two-electron problem.
+	Input:
+	- vec x: 				position coordinates
+	- omega_r (default=1):	strength of the harmonic oscillator
+	*/
+	return omega_r*x%x + 1/x;
+
 }
