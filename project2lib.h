@@ -41,6 +41,7 @@ class SphericalQuantum{
 		vec get_rho(void);
 		vec get_V(void);
 		mat get_H(void);
+		vec get_lambda(int number=3);
 
 		//Test and print functions
 		void testprint(void);

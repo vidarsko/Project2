@@ -19,16 +19,15 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	double m,tau,t,c,s,s2,c2,sc,r_il,r_ik;
 	int k,l; 
 
-	//Initial error and R matrix
+	//Initial error and R matrix, Oda er finest i verden!
 	R.eye();
 	klm = odmmi(A,N);
 	m = klm(2);
 
 	//While loop until tolerance criteria is met.
 	while (m>tol){
-		cout << m << endl;
 		//Print error to estimate time developement
-		cout << m << endl;
+		//cout << m << endl;
 
 		//Finding the largest off-diagonal element indices
 		k = klm(0),l = klm(1);
@@ -186,8 +185,25 @@ vec SphericalQuantum::get_V(void){
 }
 
 mat SphericalQuantum::get_H(void){
+	/*
+	Function that returns the hamiltonian of the system.
+	*/
 	return H;
 }
+
+vec SphericalQuantum::get_lambda(int number){
+	/*
+	Function that returns the (number) first eigenvalues of the system as a vec.
+	Input:
+	- int number [default=3]: number of eigenvalues to be returned.
+	*/
+	vec E_return (3);
+	for (int i=0;i<number;i++){
+		E_return(i) = Energies(i);
+	}
+	return E_return;
+}
+
 
 //Test and print functions
 void SphericalQuantum::testprint(void){
