@@ -1,16 +1,17 @@
 #include "project2lib.h"
 
-void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
+void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,int& rotation_counter,double tol){
 	/* 
 	Function that takes a (nxn) matrix A and returns its eigenvalues
 	and corresponding eigenvectors as column vectors 
 	stored in eigval and eigvec respectively.
 	Input:
-	- vec& eigval - n-vector for storing eigenvalues
-	- mat& eigvec - (nxn).matrix for storing eigenvectors as colums.
-	- mat A - the (nxn)-matrix we're interested in. 
-	- int N - the dimension of the square A matrix.
-	- tol [optional] - the tolerance for the off-diagonal elements. (default=1e-10)
+	- vec& eigval - 					n-vector for storing eigenvalues
+	- mat& eigvec - 					(nxn).matrix for storing eigenvectors as colums.
+	- mat A - 							the (nxn)-matrix we're interested in. 
+	- int N - 							the dimension of the square A matrix.
+	- int& rotation_counter - 			integer for storing the rotation_counter
+	- tol [optional] - 					the tolerance for the off-diagonal elements. (default=1e-10)
 	*/
 
 	//Allocation of memory
@@ -19,13 +20,16 @@ void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol){
 	double m,tau,t,c,s,s2,c2,sc,r_il,r_ik;
 	int k,l; 
 
-	//Initial error and R matrix, Oda er finest i verden!
+	//Initial error and R matrix, 
 	R.eye();
 	klm = odmmi(A,N);
 	m = klm(2);
-
+	rotation_counter=0;
 	//While loop until tolerance criteria is met.
 	while (m>tol){
+		//Counter
+		rotation_counter++;
+
 		//Print error to estimate time developement
 		//cout << m << endl;
 
@@ -162,7 +166,7 @@ void SphericalQuantum::solve(string method){
 	}
 	//Find the eigenvalues and states
 	if (method == "jacobi"){
-		eig_jacobi(Energies,Energy_states,H,n_step);
+		eig_jacobi(Energies,Energy_states,H,n_step,rotation_counter);
 	}
 	else if (method == "armadillo"){
 		eig_sym(Energies,Energy_states,H);
@@ -202,6 +206,13 @@ vec SphericalQuantum::get_lambda(int number){
 		E_return(i) = Energies(i);
 	}
 	return E_return;
+}
+
+int SphericalQuantum::get_rotation_counter(void){
+	/*
+	Function that returns the number of rotations performed during the jacobi algorithm.
+	*/
+	return rotation_counter;
 }
 
 

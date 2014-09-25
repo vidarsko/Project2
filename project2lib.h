@@ -10,7 +10,7 @@ using namespace std;
 using namespace arma;
 
 //Function for finding eigenvalues and eigenvectors using the jacobi method
-void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N,double tol = 1e-10);
+void eig_jacobi(vec& eigval,mat& eigvec,mat A,int N, int& rotation_counter, double tol = 1e-10);
 //Help functions for completing that task
 vec odmmi(mat A,int N); // Off Diagonal Max Matrix Indices
 
@@ -22,7 +22,7 @@ class SphericalQuantum{
 	bound states and the corresponding eigenstates. 
 	*/
 	private:
-		int n_step; 
+		int n_step, rotation_counter; 
 		double rho_min,rho_max, h; 
 		vec rho,V,Energies;
 		mat Energy_states,H; 
@@ -42,6 +42,7 @@ class SphericalQuantum{
 		vec get_V(void);
 		mat get_H(void);
 		vec get_lambda(int number=3);
+		int get_rotation_counter(void);
 
 		//Test and print functions
 		void testprint(void);
