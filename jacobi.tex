@@ -1,0 +1,165 @@
+% REMEMBER TO SET LANGUAGE!
+\documentclass[a4paper,10pt,english]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[norsk]{babel}
+% Standard stuff
+\usepackage{amsmath,graphicx,babel,varioref,verbatim,amsfonts}
+% colors in text
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+% Hyper refs
+\usepackage[framestyle=none,framefit=yes,heightadjust=all,framearound=all]{floatrow}    
+\floatsetup[figure]{style=Boxed,framearound=all}
+\usepackage{fancyhdr}
+\usepackage[colorlinks]{hyperref}
+
+% Document formatting
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{1.5mm}
+%\setcounter{section}{-1} Hvis du vil ha 0 som første avsnitt
+\numberwithin{figure}{section} 
+\numberwithin{table}{section}
+\numberwithin{equation}{section}
+
+%Color scheme for listings
+\usepackage{textcomp}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+
+%Listings configuration
+\usepackage{listings}
+\lstset{
+	backgroundcolor=\color{lbcolor},
+	tabsize=4,
+	rulecolor=,
+	language=python,
+        basicstyle=\scriptsize,
+        upquote=true,
+        aboveskip={1.5\baselineskip},
+        columns=fixed,
+	numbers=left,
+        showstringspaces=false,
+        extendedchars=true,
+        breaklines=true,
+        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+        frame=single,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,1},
+        commentstyle=\color[rgb]{0.133,0.545,0.133},
+        stringstyle=\color[rgb]{0.627,0.126,0.941}
+        }
+        
+%User settings
+\newcounter{subproject}
+\renewcommand{\thesubproject}{\alph{subproject}}
+\newenvironment{subproj}{
+\begin{description}
+\item[\refstepcounter{subproject}(\thesubproject)]
+}{\end{description}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\eqs}{\begin{equation}}
+\newcommand{\eqf}{\end{equation}}
+
+%Other
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage[boxed,linesnumbered,lined]{algorithm2e}
+
+%Lettering instead of numbering in different layers
+%\renewcommand{\labelenumi}{\alph{enumi}}
+%\renewcommand{\thesubsection}{\alph{subsection}}
+
+\title{Jacobi method}
+\author{Vidar Skogvoll}
+
+\begin{document}
+%Header
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+\fancyhf{}
+%Header
+%\rhead{\fancyplain{}{ NAVN PÅ PROSJEKT}} % predefined ()
+\lhead{\fancyplain{}{\rightmark }} % 1. sectionname, 1.1 subsection name etc
+\cfoot{\fancyplain{}{\thepage}}
+
+\maketitle
+
+
+\section{Method}
+
+We want to solve the equation 
+
+\eqs A x  = \lambda x \eqf
+
+Using 
+
+\section{The frobenius norm}
+
+\eqs || A ||_F = \sqrt{\sum_{i,j}a_{i,j}^2} \eqf
+
+During the similarity transformation 
+
+\eqs B = S^T A S \eqf
+
+The frobenius norm is conserved.
+
+For the $2x2$ case
+
+\eqs a_{pp}^2 + a_{qq}^2 + 2a_{pq}^2 = b_{pp}^2 + b_{qq}^2 + 2 b_{pq} = b_{pp}^2 + b_{qq}^2 \eqf
+
+Since they are symmetric. Now
+
+\eqs off(B) = ||B||_F^2 - \sum_i^m b_{ii}^2 \eqf
+\eqs = ||A||_F^2 - \sum_{i=1}^n a_{ii}^2 + 2 a{pp}^2 + a_{qq}^2 - b_{pp}^2 -b_{qq}^2
+\eqf
+\eqs = ||A||_F^2 - \sum_{i=1}^n a_{ii}^2 - 2 a_{pq}^2 \eqf
+\eqs = off(A) - 2 a_{pq}^2 \eqf
+
+And thus 
+
+\eqs off(B) \leq off(A) \eqf
+
+\section{Other}
+
+\eqs b_{pq} = 0 = a_{pq}(c^2 - s^2) + (a_{pp} - a_{qq}) cs \eqf
+\eqs \tau = \frac{a_{qq} - a_{pp}}{2a_{pq}} \eqf
+\eqs \tau \theta = \frac{s}{c} \eqf
+
+Which gives 
+
+\eqs t^2 + 2 t \tau - 1 = 0 \eqf
+\eqs t = -\tau \pm \sqrt{1 + \tau^2} \eqf
+
+We have best convergence when the absolute value of $\theta$ is less than equal to 
+$\pi/4$. 
+We would then choose the smaller ofthe roots. 
+Assume $\tau \geq 0$, then we're choosing 
+
+\eqs t = -\tau + \sqrt{1 + \tau^2} \eqf
+
+This may cause problems due to subtraction of very equal numbers. 
+What we do is multiply the equation over and under with $(\tau + \sqrt{1 + \tau^2})$ 
+
+
+\section{Estimate of floating point operations}
+Referencing to the jacobi implemented by morten. 
+
+\begin{table}[h!]
+        \centering 
+        \begin{tabular}{ll}
+                \toprule
+                Method & Flops \\
+                \midrule
+                off-diag & $n^2$ \\
+                Rotation part (Withouth eigenvectors) & $6n$ (standard claim in txtbooks) \\ 
+                \bottomrule 
+        \end{tabular}
+        \caption{Flops of the different jacobi.}
+\end{table}
+\end{document}

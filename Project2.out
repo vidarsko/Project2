@@ -1,0 +1,28 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Theory}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{The physical quantum system}{section.2}% 3
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Discretization and linear algebra}{subsection.2.1}% 4
+\BOOKMARK [3][-]{subsubsection.2.1.2}{One particle in a harmonic oscillator}{subsection.2.1}% 5
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Two electrons in a harmonic oscillator}{subsection.2.1}% 6
+\BOOKMARK [2][-]{subsection.2.2}{The jacobi rotation algorithm}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Method}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{The error in the eigenvalues as a function of nstep and max}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Number of rotations as a function of dimensionality}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.3}{Timely difference between jacobi algorithm and another algorithm}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.4}{Degeneration with l =0}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.5}{The two-electron system}{section.3}% 13
+\BOOKMARK [1][-]{section.4}{Results and discussion}{}% 14
+\BOOKMARK [2][-]{subsection.4.1}{The error in the eigenvalues as a function of nstep and max}{section.4}% 15
+\BOOKMARK [2][-]{subsection.4.2}{Number of rotations as a function of dimensionality}{section.4}% 16
+\BOOKMARK [2][-]{subsection.4.3}{Timely difference between jacobi algorithm and another algorithm}{section.4}% 17
+\BOOKMARK [2][-]{subsection.4.4}{Degeneration with l =0}{section.4}% 18
+\BOOKMARK [2][-]{subsection.4.5}{The two-electron system}{section.4}% 19
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 20
+\BOOKMARK [1][-]{Appendix.a.A}{Appendix Deducing the equation for the two electron system.}{}% 21
+\BOOKMARK [1][-]{Appendix.a.B}{Appendix Codes}{}% 22
+\BOOKMARK [2][-]{subsection.a.B.1}{The library file}{Appendix.a.B}% 23
+\BOOKMARK [2][-]{subsection.a.B.2}{The error in the eigenvalues as a function of nstep and max}{Appendix.a.B}% 24
+\BOOKMARK [2][-]{subsection.a.B.3}{Number of rotations as a function of dimensionality}{Appendix.a.B}% 25
+\BOOKMARK [2][-]{subsection.a.B.4}{Timely difference between the jacobi algorithm and another algorithm}{Appendix.a.B}% 26
+\BOOKMARK [2][-]{subsection.a.B.5}{Degeneration with l=0}{Appendix.a.B}% 27
+\BOOKMARK [2][-]{subsection.a.B.6}{The two-electron system}{Appendix.a.B}% 28

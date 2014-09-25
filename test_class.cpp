@@ -11,5 +11,5 @@ int main(){
 	vec rho = test.get_rho();
 	test.set_potential(two_elec(rho,1));
 	test.solve();
-	test.print2file();
+	cout << test.get_rotation_counter()<< endl;
 }
